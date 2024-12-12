@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 import librosa
-import pyaudio
+import sounddevice as sd
 import pandas as pd
 import time
 import soundfile as sf
@@ -19,20 +19,77 @@ st.set_page_config(
 )
 
 # Custom CSS for better UI
-st.markdown("""<style>
-    .stApp { background-color: #ffffff; }
-    .main { padding: 2rem; }
-    .stButton>button { border-radius: 20px; padding: 0.5rem 2rem; background-color: #4CAF50; color: white; font-weight: bold; border: none; transition: all 0.3s ease; }
-    .stButton>button:hover { background-color: #45a049; transform: translateY(-2px); }
-    .emotion-card { background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 10px 0; }
-    .song-card { background-color: #00000; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); margin: 8px 0; transition: transform 0.2s ease; }
-    .song-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
-    .step-header { color: #1f77b4; margin-bottom: 1rem; }
-    .progress-container { margin: 1rem 0; padding: 1rem; background-color: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
-    .disabled-step { opacity: 0.6; pointer-events: none; }
-    .success-message { color: #4CAF50; font-weight: bold; padding: 10px; border-radius: 5px; margin: 10px 0; }
-    .error-message { color: #f44336; font-weight: bold; padding: 10px; border-radius: 5px; margin: 10px 0; }
-</style>""", unsafe_allow_html=True)
+st.markdown("""
+    <style>
+    .stApp {
+        background-color: #ffffff;
+    }
+    .main {
+        padding: 2rem;
+    }
+    .stButton>button {
+        border-radius: 20px;
+        padding: 0.5rem 2rem;
+        background-color: #4CAF50;
+        color: white;
+        font-weight: bold;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+    }
+    .emotion-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 10px 0;
+    }
+    .song-card {
+        background-color: #00000;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin: 8px 0;
+        transition: transform 0.2s ease;
+    }
+    .song-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .step-header {
+        color: #1f77b4;
+        margin-bottom: 1rem;
+    }
+    .progress-container {
+        margin: 1rem 0;
+        padding: 1rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .disabled-step {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+    .success-message {
+        color: #4CAF50;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
+    .error-message {
+        color: #f44336;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # Load pre-trained models
 @st.cache_resource
@@ -180,72 +237,150 @@ with col1:
         camera_placeholder.image(st.session_state.captured_face, use_container_width=True)
         st.caption(f"Captured at {st.session_state.capture_timestamp}")
 
-# Step 2: Audio Recording with PyAudio
+# Step 2: Audio Recording
 with col2:
     st.markdown("### 🎤 Step 2: Voice Recording")
     if st.session_state.step >= 2:
         if st.button("🎙 Record Audio (5s)", key="record_audio"):
             with st.spinner("Recording..."):
-                p = pyaudio.PyAudio()
                 audio_data = []
                 duration = 5
                 sr = 22050
-                stream = p.open(format=pyaudio.paInt16,
-                                channels=1,
-                                rate=sr,
-                                input=True,
-                                frames_per_buffer=1024)
-                
-                for _ in range(0, int(sr / 1024 * duration)):
-                    data = stream.read(1024)
-                    audio_data.append(data)
 
-                stream.stop_stream()
-                stream.close()
-                p.terminate()
-                
-                audio_raw = b"".join(audio_data)
-                audio_buffer = io.BytesIO(audio_raw)
-                
-                audio, sr = librosa.load(audio_buffer, sr=22050)
-                st.session_state.audio_input = audio
+                def audio_callback(indata, frames, time, status):
+                    audio_data.append(indata.copy())
+
+                with sd.InputStream(samplerate=sr, channels=1, callback=audio_callback):
+                    st.info("🗣 Please say: 'I am testing the emotion recognition system'")
+                    time.sleep(duration)
+
+                audio = np.concatenate(audio_data).flatten()
+                st.session_state.audio_input = audio  # Store audio in session state
                 st.session_state.audio_sample_rate = sr
-                
-                st.success("✅ Audio recorded successfully!")
                 st.session_state.step = 3
-                st.experimental_rerun()
 
-        if st.session_state.audio_input is not None:
-            st.audio(st.session_state.audio_input, format='audio/wav')
+                # Save and play audio
+                wav_buffer = io.BytesIO()
+                sf.write(wav_buffer, audio, sr, format='WAV')
+                wav_buffer.seek(0)
+                st.session_state.audio_buffer = wav_buffer  # Store the buffer in session state
+                st.success("✅ Audio recorded successfully!")
+                st.rerun()  # Rerun to persist the audio in session state
+                
+        # Playback the recorded audio if available
+        if 'audio_buffer' in st.session_state:
+            st.audio(st.session_state.audio_buffer, format="audio/wav")
+    else:
+        st.info("📸 Please complete Step 1 first")
 
-# Step 3: Emotion Analysis and Music Recommendation
+
+# Step 3: Emotion Analysis
 with col3:
-    st.markdown("### 💡 Step 3: Emotion Analysis")
+    st.markdown("### 🎯 Step 3: Emotion Analysis")
     if st.session_state.step >= 3:
-        face_frame = preprocess_frame(st.session_state.captured_face) if st.session_state.captured_face else None
-        audio_features = preprocess_audio(st.session_state.audio_input, sr=st.session_state.audio_sample_rate) if st.session_state.audio_input is not None else None
-
-        if face_frame is not None and audio_features is not None:
+        if not st.session_state.analyzing and st.button("🔍 Analyze Emotion", key="analyze_emotion"):
             st.session_state.analyzing = True
-            st.session_state.face_prediction = face_model.predict(face_frame)
-            st.session_state.audio_prediction = audio_model.predict(audio_features)
+            with st.spinner("Analyzing your emotion..."):
+                # Preprocess inputs
+                face_input = preprocess_frame(st.session_state.captured_face)
+                audio_input = preprocess_audio(st.session_state.audio_input, sr=st.session_state.audio_sample_rate)
 
-            emotion, prob = weighted_emotion_prediction(st.session_state.face_prediction, st.session_state.audio_prediction)
-            st.session_state.analyzing = False
+                # Get predictions from both models
+                face_probs = face_model.predict(face_input)
+                audio_probs = audio_model.predict(audio_input)
 
-            st.session_state.face_prediction = emotion
-            st.session_state.audio_prediction = prob
+                # Get individual emotions and confidence scores
+                face_emotion_index = np.argmax(face_probs)
+                audio_emotion_index = np.argmax(audio_probs)
 
-            st.success(f"Detected Emotion: {emotion} {emotions[emotion]}")
+                face_emotion = list(emotions.keys())[face_emotion_index]
+                audio_emotion = list(emotions.keys())[audio_emotion_index]
 
-            recommended_songs = recommend_songs(emotion)
-            st.subheader("Recommended Songs:")
-            if recommended_songs.empty:
-                st.write("No songs found. Please try again.")
-            else:
-                for idx, row in recommended_songs.iterrows():
-                    st.markdown(f"- **{row['Title']}** by {row['Artist']} - [Listen Here]({row['SampleURL']})")
+                face_confidence = face_probs[0][face_emotion_index]
+                audio_confidence = audio_probs[0][audio_emotion_index]
 
-# Add custom footer
-st.markdown("---")
-st.markdown("Built with ❤️ by Your Name - [LinkedIn](https://www.linkedin.com/in/yourprofile) | [GitHub](https://github.com/yourprofile)")
+                # Display individual results
+                st.markdown(f"""
+                    <div class="emotion-card">
+                        <h2 style='text-align: center; color: #1f77b4;'>
+                            {emotions[face_emotion]} {face_emotion} (Face)
+                        </h2>
+                        <p>Confidence: {face_confidence * 100:.2f}%</p>
+                    </div>
+                """, unsafe_allow_html=True)
+
+                st.markdown(f"""
+                    <div class="emotion-card">
+                        <h2 style='text-align: center; color: #1f77b4;'>
+                            {emotions[audio_emotion]} {audio_emotion} (Audio)
+                        </h2>
+                        <p>Confidence: {audio_confidence * 100:.2f}%</p>
+                    </div>
+                """, unsafe_allow_html=True)
+
+                # Confidence scores for both separately
+                st.markdown("#### Confidence Scores")
+                # Face model confidence scores
+                face_chart_data = pd.DataFrame(
+                    face_probs[0],
+                    index=emotions.keys(),
+                    columns=['Confidence']
+                )
+                st.subheader("Facial Emotion Confidence")
+                st.bar_chart(face_chart_data)
+
+                # Audio model confidence scores
+                audio_chart_data = pd.DataFrame(
+                    audio_probs[0],
+                    index=emotions.keys(),
+                    columns=['Confidence']
+                )
+                st.subheader("Audio Emotion Confidence")
+                st.bar_chart(audio_chart_data)
+
+                # Combine results with dynamic weighting
+                predicted_emotion, final_probs = weighted_emotion_prediction(face_probs, audio_probs)
+                
+                # Display combined result
+                st.markdown(f"""
+                    <div class="emotion-card">
+                        <h2 style='text-align: center; color: #1f77b4;'>
+                            {emotions[predicted_emotion]} {predicted_emotion} (Combined)
+                        </h2>
+                    </div>
+                """, unsafe_allow_html=True)
+
+                # Confidence scores for combined prediction
+                final_chart_data = pd.DataFrame(
+                    final_probs[0],
+                    index=emotions.keys(),
+                    columns=['Confidence']
+                )
+                st.subheader("Combined Emotion Confidence")
+                st.bar_chart(final_chart_data)
+
+                # Song recommendations
+                st.markdown("### 🎵 Recommended Songs")
+                recommendations = recommend_songs(predicted_emotion)
+                
+                if not recommendations.empty:
+                    for _, song in recommendations.iterrows():
+                        st.markdown(f"""
+                            <div class="song-card">
+                                <h4>{song['Title']}</h4>
+                                <p>Artist: {song['Artist']}</p>
+                                <a href="{song['SampleURL']}" target="_blank">▶ Listen</a>
+                            </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.warning("No song recommendations available for this emotion.")
+    else:
+        st.info("🎤 Please complete Step 2 first")
+
+
+
+# Reset button
+if st.button("🔄 Start Over"):
+    for key in st.session_state.keys():
+        del st.session_state[key]
+    st.rerun()

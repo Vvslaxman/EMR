@@ -1,0 +1,8 @@
+streamlit
+opencv-python-headless
+numpy
+tensorflow
+librosa
+sounddevice
+pandas
+soundfile

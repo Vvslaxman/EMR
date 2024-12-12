@@ -2,8 +2,8 @@ streamlit
 opencv-python-headless
 numpy
 tensorflow
+sounddevice
 librosa
-pyaudio
 pandas
 soundfile
-pydub
+

@@ -6,3 +6,5 @@ librosa
 sounddevice
 pandas
 soundfile
+pydub
+portaudio

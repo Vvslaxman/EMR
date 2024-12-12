@@ -7,4 +7,3 @@ sounddevice
 pandas
 soundfile
 pydub
-portaudio

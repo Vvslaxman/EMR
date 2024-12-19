@@ -13,7 +13,7 @@ This project combines **Audio Emotion Analysis** and **Facial Emotion Recognitio
 
 ## 🔧 Architecture Overview
 
-<img src="Architecture.jpeg" alt="Architecture" width="70%" height="auto">
+<img src="sys_arch.png" alt="Architecture" width="100%" height="auto">
 
 
 The workflow begins with collecting user inputs (facial image and speech audio). These inputs are processed through separate pipelines for **facial** and **audio emotion analysis**. The results are fused to finalize the emotion label, which maps to a curated music dataset, presenting personalized song recommendations.

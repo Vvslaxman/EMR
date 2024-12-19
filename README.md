@@ -9,15 +9,14 @@ This project combines **Audio Emotion Analysis** and **Facial Emotion Recognitio
 4. **Music Recommendation**: Suggests emotion-specific songs from a curated dataset, helping users enhance or balance their mood.
 5. **Interactive UI**: Offers an intuitive user interface to input emotions and explore recommended songs.
 
----
+
 
 ## 🔧 Architecture Overview
 
-![Architecture](Architecture.jpeg)
+<img src="Architecture.jpeg" alt="Architecture" width="70%" height="auto">
+
 
 The workflow begins with collecting user inputs (facial image and speech audio). These inputs are processed through separate pipelines for **facial** and **audio emotion analysis**. The results are fused to finalize the emotion label, which maps to a curated music dataset, presenting personalized song recommendations.
-
----
 
 ## 📊 Datasets
 
@@ -37,7 +36,6 @@ The workflow begins with collecting user inputs (facial image and speech audio).
 ### 3. **Music Recommendation**
 - **Dataset**: A custom list of 900 songs tagged with emotions, mapped to the five core emotions identified in the project.
 
----
 
 ## 🚀 Key Achievements
 
@@ -50,19 +48,18 @@ The workflow begins with collecting user inputs (facial image and speech audio).
 4. **Real-Time Testing**:
    - Enabled live emotion detection from speech and facial inputs, ensuring system responsiveness and adaptability.
 
----
-
 ## 🎨 UI Design
 
 The system features a user interface built with streamlit, designed for simplicity and visual appeal. Users can:
 - Upload a facial image and provide a speech audio input.
 - View real-time predictions and corresponding music recommendations.
 ### Final UI Look:
-![Final UI Testing](result_1.png)
-![Final UI Testing](result_2.png)
-![Final UI Testing](result_3.png)
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+    <img src="result_1.png" alt="Final UI Testing 1" width="30%">
+    <img src="result_2.png" alt="Final UI Testing 2" width="30%">
+    <img src="result_3.png" alt="Final UI Testing 3" width="30%">
+</div>
 
----
 
 ## 📈 Individual Model Results
 
@@ -73,10 +70,11 @@ The system features a user interface built with streamlit, designed for simplici
   Indicates strong model performance on unseen validation data. Gaps between train and validation accuracy were monitored to minimize overfitting or underfitting.
 
 #### Train and Validation Accuracy Plot:
-![Audio Emotion Analysis](audio_model_plots.png)
-![Confusion Matrix](cm_audio.png)
+<div style="display: flex; justify-content: space-around; align-items: center;">
+    <img src="audio_model_plots.png" alt="Audio Emotion Analysis" width="45%">
+    <img src="cm_audio.png" alt="Confusion Matrix" width="45%">
+</div>
 
----
 
 ### **Facial Emotion Recognition**
 - **Train Accuracy**: 81.85%  
@@ -85,10 +83,11 @@ The system features a user interface built with streamlit, designed for simplici
   Demonstrates excellent performance on unseen validation data.
 
 #### Train and Validation Accuracy Plot:
-![Facial Emotion Recognition](face_model_plots.png)
-![Confusion Matrix](cm_face.png)
+<div style="display: flex; justify-content: space-around; align-items: center;">
+    <img src="face_model_plots.png" alt="Face Emotion Analysis" width="45%">
+    <img src="cm_face.png" alt="Confusion Matrix" width="45%">
+</div>
 
----
 
 ## 🛠️ Methodology
 
@@ -144,7 +143,7 @@ The system features a user interface built with streamlit, designed for simplici
 2. Integrating real-time song generation based on emotions.
 3. Deploying the system on AWS for scalability and accessibility.
 
-   ## Contributing
+## Contributing
 Contributions are welcome! To contribute to this project, please follow these steps:
 
 1. **Fork the Repository**:

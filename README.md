@@ -109,9 +109,8 @@ The system features a user interface built with streamlit, designed for simplici
    - CNN architecture fine-tuned for RAVDESS dataset.
 
 ### Emotion Fusion:
-- Implemented **Random Forest Classifier** to integrate facial and speech emotion features.
+- Employed dynamic confidence-based weighting to integrate facial and speech emotion results, ensuring higher trust in the model with greater prediction confidence.
 
----
 
 ## 📈 Results and Impact
 
@@ -120,7 +119,6 @@ The system features a user interface built with streamlit, designed for simplici
   - Adaptive music players.
   - Emotion-sensitive AI systems for mental health.
 
----
 
 ## 💻 Setup Instructions
 

@@ -71,8 +71,8 @@ The system features a user interface built with streamlit, designed for simplici
 
 #### Train and Validation Accuracy Plot:
 <div style="display: flex; justify-content: space-around; align-items: center;">
-    <img src="audio_model_plots.png" alt="Audio Emotion Analysis" width="45%">
-    <img src="cm_audio.png" alt="Confusion Matrix" width="45%">
+    <img src="audio_model_plots.png" alt="Audio Emotion Analysis" width="50%">
+    <img src="cm_audio.png" alt="Confusion Matrix" width="45%" height="40%">
 </div>
 
 
@@ -84,8 +84,8 @@ The system features a user interface built with streamlit, designed for simplici
 
 #### Train and Validation Accuracy Plot:
 <div style="display: flex; justify-content: space-around; align-items: center;">
-    <img src="face_model_plots.png" alt="Face Emotion Analysis" width="45%">
-    <img src="cm_face.png" alt="Confusion Matrix" width="45%">
+    <img src="face_model_plots.png" alt="Face Emotion Analysis" width="50%">
+    <img src="cm_face.png" alt="Confusion Matrix" width="45%" height="20%">
 </div>
 
 

@@ -169,6 +169,10 @@ Contributions are welcome! To contribute to this project, please follow these st
     - Go to the repository on GitHub.
     - Click on "New Pull Request."
     - Describe your changes and submit the PR.
+## Future Work:
+Recommendation Dataset: Lets make it tuned for some latest dataset like spotify.
+Add more personalisation features in the GUI  and Experiment with different hyperparameters to further improve both the models performance for more genralised predictions. 
+
 
 ## Contact
 For questions or suggestions, please open an issue or contact [Vvslaxman](mailto:vvslaxman14@gmail.com).

@@ -116,7 +116,7 @@ The system features a user interface built with streamlit, designed for simplici
 
 - **Fusion Benefits**: Combining audio and visual inputs improved emotion prediction accuracy, highlighting the potential of multi-modal AI.
 - **Real-World Applications**:
-  - Adaptive music players.
+  - Adaptive music recomendation.
   - Emotion-sensitive AI systems for mental health.
 
 

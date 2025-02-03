@@ -24,7 +24,7 @@ The workflow begins with collecting user inputs (facial image and speech audio).
 - **Dataset**: [RAVDESS](https://zenodo.org/record/1188976) - The Ryerson Audio-Visual Database of Emotional Speech and Song.
 - **Details**: 
   - 1500 audio samples from 24 actors (12 male, 12 female).
-  - Used 5 emotions: *Happy, Sad, Calm, Angry, Neutral*.
+  - Used 4 emotions: *Happy, Sad, Angry, Neutral*.
 - **Processing**: Extracted **MFCC features** to train a CNN for audio emotion recognition.
 
 ### 2. **Facial Emotion Recognition**
@@ -146,8 +146,8 @@ Contributions are welcome! To contribute to this project, please follow these st
 
 1. **Fork the Repository**:
     ```bash
-    git clone https://github.com/yourusername/bigram-transformer-model.git
-    cd bigram-transformer-model
+    git clone https://github.com/yourusername/EMR.git
+    cd EMR
     ```
 
 2. **Create a New Branch**:
